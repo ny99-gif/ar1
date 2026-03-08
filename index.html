@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Force Play Mode</title>
+    <title>Hybrid AR Final</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
@@ -14,19 +14,14 @@
         z-index: 10000; padding: 20px 40px; background: #FFD700; border: none;
         border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px;
       }
-      #debug-log {
-        position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
-        background: rgba(0,0,0,0.8); color: #00FF00; padding: 5px; font-family: monospace;
-      }
     </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
 
-    <div id="debug-log">Status: Waiting for interaction...</div>
     <button id="start-button">タップしてARを開始</button>
 
     <a-scene 
-      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;" 
+      mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001; autoStart: false;" 
       vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
@@ -42,7 +37,8 @@
           <a-entity gltf-model="#artifact" position="0 0 0" scale="0.2 0.2 0.2"></a-entity>
 
           <a-video id="telopDisplay" src="#telopVid" 
-                   position="0 0.2 0.1" scale="2.5 1.4 1">
+                   material="shader: chromakey; color: 0 1 0" 
+                   position="0 0 0.05" scale="2.5 1.4 1">
           </a-video>
 
         </a-entity>
@@ -50,20 +46,14 @@
     </a-scene>
 
     <script>
-      const log = document.getElementById('debug-log');
       const btn = document.getElementById('start-button');
       const video = document.getElementById('telopVid');
       const scene = document.querySelector('a-scene');
 
       btn.addEventListener('click', () => {
-        // 1. シーンを開始
         scene.systems['mindar-image-system'].start();
-        // 2. 動画を強制再生
         video.play().then(() => {
-          log.innerHTML = "✅ Video Playing!";
           btn.style.display = 'none';
-        }).catch(err => {
-          log.innerHTML = "❌ Play Error: " + err;
         });
       });
     </script>
