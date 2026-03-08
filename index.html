@@ -3,32 +3,35 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Debug v2</title>
+    <title>AR Force Play Mode</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
     
     <style>
-      /* デバッグログを絶対に見えるように設定 */
+      #start-button {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        z-index: 10000; padding: 20px 40px; background: #FFD700; border: none;
+        border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px;
+      }
       #debug-log {
-        position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-        z-index: 9999; background: rgba(255, 0, 0, 0.8); color: white;
-        font-family: sans-serif; font-size: 14px; padding: 10px;
-        pointer-events: none;
+        position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
+        background: rgba(0,0,0,0.8); color: #00FF00; padding: 5px; font-family: monospace;
       }
     </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
 
-    <div id="debug-log">Status: Initializing...</div>
+    <div id="debug-log">Status: Waiting for interaction...</div>
+    <button id="start-button">タップしてARを開始</button>
 
     <a-scene 
-      mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001; autoStart: true;" 
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;" 
       vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
         <a-asset-item id="artifact" src="./artifact.glb"></a-asset-item>
-        <video id="telopVid" src="./telop.mp4" autoplay loop muted playsinline crossorigin="anonymous"></video>
+        <video id="telopVid" src="./telop.mp4" loop muted playsinline crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -39,8 +42,7 @@
           <a-entity gltf-model="#artifact" position="0 0 0" scale="0.2 0.2 0.2"></a-entity>
 
           <a-video id="telopDisplay" src="#telopVid" 
-                   material="shader: chromakey; color: 0 1 0" 
-                   position="0 0 0.05" scale="2.5 1.4 1">
+                   position="0 0.2 0.1" scale="2.5 1.4 1">
           </a-video>
 
         </a-entity>
@@ -49,20 +51,20 @@
 
     <script>
       const log = document.getElementById('debug-log');
+      const btn = document.getElementById('start-button');
       const video = document.getElementById('telopVid');
+      const scene = document.querySelector('a-scene');
 
-      // 1. まずスクリプトが動いているか
-      log.innerHTML = "Script Running. Waiting for video...";
-
-      // 2. 動画が読み込めたか
-      video.addEventListener('canplaythrough', () => {
-        log.innerHTML = "✅ Video Ready: telop.mp4";
-        log.style.background = "rgba(0, 128, 0, 0.8)";
-      });
-
-      // 3. エラーが出たか
-      video.addEventListener('error', () => {
-        log.innerHTML = "❌ Error: Cannot find 'telop.mp4'. Check filename!";
+      btn.addEventListener('click', () => {
+        // 1. シーンを開始
+        scene.systems['mindar-image-system'].start();
+        // 2. 動画を強制再生
+        video.play().then(() => {
+          log.innerHTML = "✅ Video Playing!";
+          btn.style.display = 'none';
+        }).catch(err => {
+          log.innerHTML = "❌ Play Error: " + err;
+        });
       });
     </script>
   </body>
