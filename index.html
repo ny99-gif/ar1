@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hybrid AR Final</title>
+    <title>Hybrid AR Layout Adjustment</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
@@ -13,6 +13,7 @@
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
         z-index: 10000; padding: 20px 40px; background: #FFD700; border: none;
         border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       }
     </style>
   </head>
@@ -38,7 +39,7 @@
 
           <a-video id="telopDisplay" src="#telopVid" 
                    material="shader: chromakey; color: 0 1 0" 
-                   position="0 0 0.05" scale="2.5 1.4 1">
+                   position="0 0.1 0.08" scale="1.8 1.0 1">
           </a-video>
 
         </a-entity>
