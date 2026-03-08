@@ -3,13 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hybrid AR Exhibition</title>
+    <title>Hybrid AR Debug Mode</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
-    
+
+    <div id="debug-log" style="position: fixed; top: 10px; left: 10px; z-index: 1000; background: rgba(0,0,0,0.7); color: white; font-family: monospace; font-size: 12px; padding: 10px; pointer-events: none;">
+      Checking files...
+    </div>
+
     <a-scene 
       mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001; autoStart: true;" 
       loading-screen="dotsColor: gold; backgroundColor: black"
@@ -24,17 +28,33 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        
         <a-entity rotation="90 180 0">
           
           <a-entity gltf-model="#artifact" position="0 0 0" scale="0.2 0.2 0.2"></a-entity>
 
-          <a-video src="#telopVid" material="shader: chromakey; color: 0 1 0" 
-                   position="0 0 0.01" scale="2.5 1.4 1">
+          <a-video id="telopDisplay" src="#telopVid" 
+                   material="shader: chromakey; color: 0 1 0" 
+                   position="0 0 0.05" scale="2.5 1.4 1">
           </a-video>
 
         </a-entity>
       </a-entity>
     </a-scene>
+
+    <script>
+      // ITリーダー向けの簡易ログ出力
+      const video = document.querySelector('#telopVid');
+      const log = document.querySelector('#debug-log');
+
+      video.addEventListener('loadeddata', () => {
+        log.innerHTML = "✅ Video Loaded: telop.mp4";
+        log.style.color = "#00ff00";
+      });
+
+      video.addEventListener('error', (e) => {
+        log.innerHTML = "❌ Video Error: File not found or name mismatch!";
+        log.style.color = "#ff4444";
+      });
+    </script>
   </body>
 </html>
