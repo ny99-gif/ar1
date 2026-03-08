@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Exhibition Test</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
@@ -15,41 +14,23 @@
       device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <video id="vid" 
-               src="./ar_video.mp4" 
-               autoplay 
-               loop 
-               muted 
-               playsinline 
-               webkit-playsinline 
-               crossorigin="anonymous">
-        </video>
+        <a-asset-item id="myModel" src="./artifact.glb"></a-asset-item>
+        <video id="vid" src="./telop.mp4" autoplay loop muted playsinline crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
-        <a-video 
-          src="#vid" 
-          material="shader: chromakey; color: 0 1 0" 
-          rotation="0 0 0" 
-          position="0 0 0" 
-          scale="1 1 1">
-        </a-video>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity rotation="-90 0 0">
+          
+          <a-entity gltf-model="#myModel" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+
+          <a-video src="#vid" material="shader: chromakey; color: 0 1 0" 
+                   position="0 0.4 0.1" scale="1 0.5 1">
+          </a-video>
+
+        </a-entity>
       </a-entity>
     </a-scene>
-
-    <script>
-      // マーカーが認識された瞬間に、プログラムからも再生命令を投げる（念のための処理）
-      const targetEl = document.querySelector('#ar-target');
-      const video = document.querySelector('#vid');
-
-      targetEl.addEventListener("targetFound", event => {
-        console.log("Target found! Trying to play video...");
-        video.play().catch(error => {
-          console.log("Autoplay blocked by browser. User interaction might be required.");
-        });
-      });
-    </script>
   </body>
 </html>
