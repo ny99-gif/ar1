@@ -3,22 +3,28 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hybrid AR Debug Mode</title>
+    <title>AR Debug v2</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+    
+    <style>
+      /* デバッグログを絶対に見えるように設定 */
+      #debug-log {
+        position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+        z-index: 9999; background: rgba(255, 0, 0, 0.8); color: white;
+        font-family: sans-serif; font-size: 14px; padding: 10px;
+        pointer-events: none;
+      }
+    </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
 
-    <div id="debug-log" style="position: fixed; top: 10px; left: 10px; z-index: 1000; background: rgba(0,0,0,0.7); color: white; font-family: monospace; font-size: 12px; padding: 10px; pointer-events: none;">
-      Checking files...
-    </div>
+    <div id="debug-log">Status: Initializing...</div>
 
     <a-scene 
       mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001; autoStart: true;" 
-      loading-screen="dotsColor: gold; backgroundColor: black"
-      vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: false">
+      vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
         <a-asset-item id="artifact" src="./artifact.glb"></a-asset-item>
@@ -42,18 +48,21 @@
     </a-scene>
 
     <script>
-      // ITリーダー向けの簡易ログ出力
-      const video = document.querySelector('#telopVid');
-      const log = document.querySelector('#debug-log');
+      const log = document.getElementById('debug-log');
+      const video = document.getElementById('telopVid');
 
-      video.addEventListener('loadeddata', () => {
-        log.innerHTML = "✅ Video Loaded: telop.mp4";
-        log.style.color = "#00ff00";
+      // 1. まずスクリプトが動いているか
+      log.innerHTML = "Script Running. Waiting for video...";
+
+      // 2. 動画が読み込めたか
+      video.addEventListener('canplaythrough', () => {
+        log.innerHTML = "✅ Video Ready: telop.mp4";
+        log.style.background = "rgba(0, 128, 0, 0.8)";
       });
 
-      video.addEventListener('error', (e) => {
-        log.innerHTML = "❌ Video Error: File not found or name mismatch!";
-        log.style.color = "#ff4444";
+      // 3. エラーが出たか
+      video.addEventListener('error', () => {
+        log.innerHTML = "❌ Error: Cannot find 'telop.mp4'. Check filename!";
       });
     </script>
   </body>
